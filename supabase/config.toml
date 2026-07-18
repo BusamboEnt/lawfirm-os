@@ -1,0 +1,12 @@
+[project]
+id = "lawfirm-os"
+name = "Law Firm OS"
+
+[api]
+port = 54321
+
+[db]
+port = 54322
+
+[studio]
+port = 54323
