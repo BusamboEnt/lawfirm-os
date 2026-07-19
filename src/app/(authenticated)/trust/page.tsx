@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function TrustPage() {
@@ -11,10 +12,20 @@ export default async function TrustPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900">Trust / IOLTA Ledger</h1>
-      <p className="mt-1 text-sm text-gray-500">
-        Append-only ledger — entries cannot be modified or deleted.
-      </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Trust / IOLTA Ledger</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Append-only ledger — entries cannot be modified or deleted.
+          </p>
+        </div>
+        <Link
+          href="/trust/new"
+          className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
+        >
+          New Entry
+        </Link>
+      </div>
 
       <div className="mt-6 overflow-hidden rounded-lg bg-white shadow-sm">
         <table className="min-w-full divide-y divide-gray-200">
