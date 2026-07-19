@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { MatterTeam } from "./matter-team";
 
 export default async function MatterDetailPage({
   params,
@@ -55,6 +56,17 @@ export default async function MatterDetailPage({
 
   const totalMinutes =
     timeEntries?.reduce((sum, e) => sum + e.duration_min, 0) ?? 0;
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user!.id)
+    .single();
+  const canManage =
+    profile?.role === "partner" || profile?.role === "admin";
 
   return (
     <div>
@@ -117,46 +129,12 @@ export default async function MatterDetailPage({
           </dl>
         </div>
 
-        <div className="rounded-lg bg-white p-4 shadow-sm">
-          <h3 className="font-medium text-gray-900">Team</h3>
-          <ul className="mt-3 space-y-2 text-sm">
-            {members?.map((m) => (
-              <li key={m.user_id} className="flex justify-between">
-                <span className="text-gray-900">
-                  {(m.profiles as any)?.full_name}
-                </span>
-                <span className="text-gray-500 capitalize">
-                  {(m.profiles as any)?.role}
-                </span>
-              </li>
-            ))}
-            {(!members || members.length === 0) && (
-              <li className="text-gray-500">No team members assigned.</li>
-            )}
-          </ul>
-        </div>
-
-        <div className="rounded-lg bg-white p-4 shadow-sm">
-          <h3 className="font-medium text-gray-900">Clients</h3>
-          <ul className="mt-3 space-y-2 text-sm">
-            {clients?.map((mc) => (
-              <li key={mc.client_id}>
-                <Link
-                  href={`/clients/${mc.client_id}`}
-                  className="text-brand-600 hover:underline"
-                >
-                  {(mc.clients as any)?.name}
-                </Link>
-                <span className="ml-2 text-gray-500">
-                  {(mc.clients as any)?.email}
-                </span>
-              </li>
-            ))}
-            {(!clients || clients.length === 0) && (
-              <li className="text-gray-500">No clients linked.</li>
-            )}
-          </ul>
-        </div>
+        <MatterTeam
+          matterId={id}
+          members={(members as any) ?? []}
+          matterClients={(clients as any) ?? []}
+          canManage={canManage}
+        />
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">

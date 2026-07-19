@@ -13,6 +13,7 @@ const navigation = [
   { name: "Calendar", href: "/calendar" },
   { name: "Billing", href: "/billing" },
   { name: "Trust Ledger", href: "/trust" },
+  { name: "Settings", href: "/settings" },
 ];
 
 export function Sidebar({ user }: { user: any }) {
