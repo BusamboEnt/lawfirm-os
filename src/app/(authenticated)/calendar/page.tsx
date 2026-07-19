@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function CalendarPage() {
@@ -12,7 +13,15 @@ export default async function CalendarPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900">Calendar & Deadlines</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-gray-900">Calendar & Deadlines</h1>
+        <Link
+          href="/calendar/new"
+          className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
+        >
+          New Task / Deadline
+        </Link>
+      </div>
 
       <div className="mt-6 space-y-4">
         {tasks?.map((task) => (

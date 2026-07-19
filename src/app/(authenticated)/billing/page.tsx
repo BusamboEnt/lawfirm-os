@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function BillingPage() {
@@ -11,7 +12,15 @@ export default async function BillingPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900">Time & Billing</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-gray-900">Time & Billing</h1>
+        <Link
+          href="/billing/new"
+          className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
+        >
+          New Time Entry
+        </Link>
+      </div>
 
       <div className="mt-6 overflow-hidden rounded-lg bg-white shadow-sm">
         <table className="min-w-full divide-y divide-gray-200">
