@@ -1,13 +1,26 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
-export default async function MattersPage() {
+export default async function MattersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; status?: string }>;
+}) {
+  const { q, status } = await searchParams;
   const supabase = await createClient();
 
-  const { data: matters } = await supabase
+  let query = supabase
     .from("matters")
     .select("*")
     .order("created_at", { ascending: false });
+
+  if (q)
+    query = query.or(
+      `title.ilike.%${q}%,matter_number.ilike.%${q}%,practice_area.ilike.%${q}%`
+    );
+  if (status) query = query.eq("status", status);
+
+  const { data: matters } = await query;
 
   return (
     <div>
@@ -21,7 +34,32 @@ export default async function MattersPage() {
         </Link>
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-lg bg-white shadow-sm">
+      <form method="GET" className="mt-4 flex max-w-xl gap-2">
+        <input
+          name="q"
+          defaultValue={q ?? ""}
+          placeholder="Search by title, matter #, or practice area..."
+          className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+        />
+        <select
+          name="status"
+          defaultValue={status ?? ""}
+          className="rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+        >
+          <option value="">All statuses</option>
+          <option value="open">Open</option>
+          <option value="pending">Pending</option>
+          <option value="closed">Closed</option>
+        </select>
+        <button
+          type="submit"
+          className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+        >
+          Search
+        </button>
+      </form>
+
+      <div className="mt-4 overflow-hidden rounded-lg bg-white shadow-sm">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>

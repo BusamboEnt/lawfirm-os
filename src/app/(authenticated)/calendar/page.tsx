@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { TaskActions } from "./task-actions";
 
 export default async function CalendarPage() {
   const supabase = await createClient();
@@ -37,7 +38,15 @@ export default async function CalendarPage() {
           >
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="font-medium text-gray-900">{task.title}</h3>
+                <h3
+                  className={
+                    task.status === "completed"
+                      ? "font-medium text-gray-400 line-through"
+                      : "font-medium text-gray-900"
+                  }
+                >
+                  {task.title}
+                </h3>
                 {task.matters && (
                   <p className="text-sm text-gray-500">
                     {(task.matters as any).matter_number} — {(task.matters as any).title}
@@ -45,10 +54,23 @@ export default async function CalendarPage() {
                 )}
               </div>
               <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">
+                <p
+                  className={`text-sm font-medium ${
+                    task.status !== "completed" &&
+                    new Date(task.due_date!) < new Date()
+                      ? "text-red-600"
+                      : "text-gray-900"
+                  }`}
+                >
                   {new Date(task.due_date!).toLocaleDateString()}
+                  {task.status !== "completed" &&
+                    new Date(task.due_date!) < new Date() && (
+                      <span className="ml-1 text-xs font-semibold">
+                        (overdue)
+                      </span>
+                    )}
                 </p>
-                <div className="mt-1 flex gap-1">
+                <div className="mt-1 flex items-center justify-end gap-2">
                   {task.is_court_date && (
                     <span className="rounded bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
                       Court Date
@@ -59,6 +81,7 @@ export default async function CalendarPage() {
                       SOL Deadline
                     </span>
                   )}
+                  <TaskActions taskId={task.id} status={task.status} />
                 </div>
               </div>
             </div>

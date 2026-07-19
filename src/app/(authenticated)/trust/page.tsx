@@ -10,6 +10,24 @@ export default async function TrustPage() {
     .order("created_at", { ascending: false })
     .limit(50);
 
+  const inflow = ["deposit", "interest", "refund"];
+  const totals = (ledger ?? [])
+    .filter((e) => e.account === "trust")
+    .reduce(
+      (acc, e) => {
+        if (inflow.includes(e.txn_type)) acc.in += e.amount_cents;
+        else acc.out += e.amount_cents;
+        return acc;
+      },
+      { in: 0, out: 0 }
+    );
+
+  const summary = [
+    { label: "Deposits & Credits", value: totals.in },
+    { label: "Withdrawals & Transfers", value: totals.out },
+    { label: "Trust Balance", value: totals.in - totals.out },
+  ];
+
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -25,6 +43,23 @@ export default async function TrustPage() {
         >
           New Entry
         </Link>
+      </div>
+
+      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {summary.map((s) => (
+          <div key={s.label} className="rounded-lg bg-white p-4 shadow-sm">
+            <p className="text-sm font-medium text-gray-500">{s.label}</p>
+            <p
+              className={`mt-1 text-2xl font-bold ${
+                s.label === "Trust Balance" && s.value < 0
+                  ? "text-red-600"
+                  : "text-gray-900"
+              }`}
+            >
+              ${(s.value / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+            </p>
+          </div>
+        ))}
       </div>
 
       <div className="mt-6 overflow-hidden rounded-lg bg-white shadow-sm">

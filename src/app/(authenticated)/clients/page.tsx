@@ -1,13 +1,25 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
-export default async function ClientsPage() {
+export default async function ClientsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const { q } = await searchParams;
   const supabase = await createClient();
 
-  const { data: clients } = await supabase
+  let query = supabase
     .from("clients")
     .select("*")
     .order("created_at", { ascending: false });
+
+  if (q)
+    query = query.or(
+      `name.ilike.%${q}%,email.ilike.%${q}%,company.ilike.%${q}%,phone.ilike.%${q}%`
+    );
+
+  const { data: clients } = await query;
 
   return (
     <div>
@@ -21,7 +33,22 @@ export default async function ClientsPage() {
         </Link>
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-lg bg-white shadow-sm">
+      <form method="GET" className="mt-4 flex max-w-md gap-2">
+        <input
+          name="q"
+          defaultValue={q ?? ""}
+          placeholder="Search by name, email, company, or phone..."
+          className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+        />
+        <button
+          type="submit"
+          className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+        >
+          Search
+        </button>
+      </form>
+
+      <div className="mt-4 overflow-hidden rounded-lg bg-white shadow-sm">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>

@@ -1,16 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export function UploadForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
 
   const [matters, setMatters] = useState<{ id: string; matter_number: string; title: string }[]>([]);
   const [form, setForm] = useState({
-    matter_id: "",
+    matter_id: searchParams.get("matter") ?? "",
     description: "",
   });
   const [file, setFile] = useState<File | null>(null);

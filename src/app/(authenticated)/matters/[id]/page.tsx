@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { MatterTeam } from "./matter-team";
+import { DocumentActions } from "@/components/document-actions";
 
 export default async function MatterDetailPage({
   params,
@@ -166,16 +167,38 @@ export default async function MatterDetailPage({
         </div>
 
         <div className="rounded-lg bg-white p-4 shadow-sm">
-          <h3 className="font-medium text-gray-900">Recent Documents</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="font-medium text-gray-900">Case File</h3>
+            <div className="flex gap-3 text-sm">
+              <Link
+                href={`/documents/upload?matter=${id}`}
+                className="font-medium text-brand-600 hover:text-brand-800"
+              >
+                Upload
+              </Link>
+              <Link
+                href={`/documents?matter=${id}`}
+                className="font-medium text-brand-600 hover:text-brand-800"
+              >
+                All documents
+              </Link>
+            </div>
+          </div>
           <ul className="mt-3 space-y-2 text-sm">
             {documents?.map((doc) => (
-              <li key={doc.id} className="flex justify-between">
-                <span className="text-gray-900">{doc.file_name}</span>
-                <span className="text-gray-500">v{doc.version}</span>
+              <li key={doc.id} className="flex items-center justify-between gap-2">
+                <span className="min-w-0 truncate text-gray-900">
+                  {doc.file_name}
+                  <span className="ml-2 text-gray-400">v{doc.version}</span>
+                </span>
+                <DocumentActions
+                  filePath={doc.file_path}
+                  fileName={doc.file_name}
+                />
               </li>
             ))}
             {(!documents || documents.length === 0) && (
-              <li className="text-gray-500">No documents.</li>
+              <li className="text-gray-500">No documents in the file yet.</li>
             )}
           </ul>
         </div>
