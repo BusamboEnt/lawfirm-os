@@ -39,6 +39,9 @@ cp .env.example .env.local
 npx supabase db push
 ```
 
+This creates all tables, RLS policies, trust-ledger immutability triggers,
+and the private `documents` storage bucket with per-matter access policies.
+
 4. Start the dev server:
 
 ```bash
@@ -53,6 +56,7 @@ Migrations are in `supabase/migrations/` and cover:
 - `00002_rls_policies.sql` — row-level security with per-matter access scoping
 - `00003_trust_immutability.sql` — database-level immutability triggers for trust ledger
 - `00004_profile_trigger.sql` — auto-create profile on auth signup
+- `00005_storage.sql` — private `documents` bucket with per-matter storage policies
 
 ## Security
 
