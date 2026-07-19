@@ -57,6 +57,16 @@ Migrations are in `supabase/migrations/` and cover:
 - `00003_trust_immutability.sql` — database-level immutability triggers for trust ledger
 - `00004_profile_trigger.sql` — auto-create profile on auth signup
 - `00005_storage.sql` — private `documents` bucket with per-matter storage policies
+- `00006_document_access_log.sql` — append-only audit log of document views/downloads/uploads
+
+## Deadline Email Digest
+
+`/api/deadline-digest` emails each user their tasks due within 7 days
+(SOL deadlines, court dates, and overdue items flagged). It runs weekdays
+at 12:00 UTC via Vercel Cron (`vercel.json`) and needs three env vars:
+`SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY` ([resend.com](https://resend.com)),
+and `EMAIL_FROM`. Set `CRON_SECRET` to require a
+`Authorization: Bearer <secret>` header — Vercel Cron sends it automatically.
 
 ## Security
 

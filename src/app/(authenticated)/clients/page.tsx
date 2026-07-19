@@ -25,12 +25,20 @@ export default async function ClientsPage({
     <div>
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Clients</h1>
-        <Link
-          href="/clients/new"
-          className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
-        >
-          New Client
-        </Link>
+        <div className="flex gap-3">
+          <Link
+            href="/clients/new"
+            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            Quick Add
+          </Link>
+          <Link
+            href="/clients/intake"
+            className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
+          >
+            New Intake
+          </Link>
+        </div>
       </div>
 
       <form method="GET" className="mt-4 flex max-w-md gap-2">

@@ -192,6 +192,8 @@ export default async function MatterDetailPage({
                   <span className="ml-2 text-gray-400">v{doc.version}</span>
                 </span>
                 <DocumentActions
+                  documentId={doc.id}
+                  matterId={id}
                   filePath={doc.file_path}
                   fileName={doc.file_name}
                 />

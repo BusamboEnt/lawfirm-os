@@ -29,6 +29,17 @@ export default async function DocumentsPage({
         .single()
     : { data: null };
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user!.id)
+    .single();
+  const hasBroadAccess =
+    profile?.role === "partner" || profile?.role === "admin";
+
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -43,12 +54,22 @@ export default async function DocumentsPage({
             </p>
           )}
         </div>
-        <Link
-          href={matter ? `/documents/upload?matter=${matter}` : "/documents/upload"}
-          className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
-        >
-          Upload Document
-        </Link>
+        <div className="flex gap-3">
+          {hasBroadAccess && (
+            <Link
+              href="/documents/access-log"
+              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              Access Log
+            </Link>
+          )}
+          <Link
+            href={matter ? `/documents/upload?matter=${matter}` : "/documents/upload"}
+            className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
+          >
+            Upload Document
+          </Link>
+        </div>
       </div>
 
       <form method="GET" className="mt-4 flex max-w-md gap-2">
@@ -122,6 +143,8 @@ export default async function DocumentsPage({
                 </td>
                 <td className="px-6 py-4">
                   <DocumentActions
+                    documentId={doc.id}
+                    matterId={doc.matter_id}
                     filePath={doc.file_path}
                     fileName={doc.file_name}
                   />

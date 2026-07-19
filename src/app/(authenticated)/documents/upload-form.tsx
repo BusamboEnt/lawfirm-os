@@ -54,21 +54,33 @@ export function UploadForm() {
       return;
     }
 
-    const { error: dbError } = await supabase.from("documents").insert({
-      matter_id: form.matter_id,
-      uploaded_by: user!.id,
-      file_name: file.name,
-      file_path: filePath,
-      file_size: file.size,
-      mime_type: file.type || null,
-      description: form.description || null,
-    });
+    const { data: doc, error: dbError } = await supabase
+      .from("documents")
+      .insert({
+        matter_id: form.matter_id,
+        uploaded_by: user!.id,
+        file_name: file.name,
+        file_path: filePath,
+        file_size: file.size,
+        mime_type: file.type || null,
+        description: form.description || null,
+      })
+      .select("id")
+      .single();
 
     if (dbError) {
       setError(dbError.message);
       setLoading(false);
       return;
     }
+
+    await supabase.from("document_access_log").insert({
+      document_id: doc?.id ?? null,
+      matter_id: form.matter_id,
+      file_name: file.name,
+      action: "upload",
+      accessed_by: user!.id,
+    });
 
     router.push("/documents");
     router.refresh();

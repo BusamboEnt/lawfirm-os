@@ -4,9 +4,13 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 export function DocumentActions({
+  documentId,
+  matterId,
   filePath,
   fileName,
 }: {
+  documentId: string;
+  matterId: string;
   filePath: string;
   fileName: string;
 }) {
@@ -22,6 +26,20 @@ export function DocumentActions({
       setError(urlError?.message ?? "Could not open file.");
       return;
     }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from("document_access_log").insert({
+        document_id: documentId,
+        matter_id: matterId,
+        file_name: fileName,
+        action: download ? "download" : "view",
+        accessed_by: user.id,
+      });
+    }
+
     window.open(data.signedUrl, "_blank");
   }
 
